@@ -70,8 +70,6 @@ void AreaSelection::OnLButtonDown(UINT nFlags, CPoint point)  {
 
 void AreaSelection::OnRButtonDown(UINT nFlags, CPoint point) {
     EndDialog(IDCANCEL);
-
-    Bitmap.Destroy();
 }
 
 BOOL AreaSelection::OnSetCursor(CWnd* pWnd, UINT nHitTest, UINT message) {

@@ -25,7 +25,6 @@ static UINT indicators[] =
     ID_INDICATOR_SCRL,
 };
 
-
 CMainFrame::CMainFrame() {
     // TODO: Add keyboard hook and settings loader here.
 }

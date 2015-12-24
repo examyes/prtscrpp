@@ -16,6 +16,7 @@ implementation of the CprtscrppView class
 
 IMPLEMENT_DYNCREATE(CprtscrppView, CScrollView)
 BEGIN_MESSAGE_MAP(CprtscrppView, CScrollView)
+    ON_WM_HOTKEY()
 END_MESSAGE_MAP()
 
 CprtscrppView::CprtscrppView() {
@@ -33,6 +34,7 @@ BOOL CprtscrppView::PreCreateWindow(CREATESTRUCT& cs) {
 
 // https://msdn.microsoft.com/en-us/library/3ew6s3ez.aspx
 void CprtscrppView::OnInitialUpdate() {
+    RegisterHotKey(m_hWnd, 100, MOD_CONTROL, 0x34);
     CSize size(100, 100);
     SetScrollSizes(MM_TEXT, size);
 }
@@ -84,4 +86,11 @@ void CprtscrppView::OnUpdate(CView*, LPARAM , CObject*) {
     }else { // Otherwise just draw the standard text.
         this->drawText(GetDC());
     }
+}
+
+void CprtscrppView::OnHotKey(UINT nHotKeyId, UINT nKey1, UINT nKey2)
+{
+    // TODO: Add your message handler code here and/or call default
+    TRACE("HOKTEY ACTIVATEDDDDDDDDDDD");
+    //CScrollView::OnHotKey(nHotKeyId, nKey1, nKey2);
 }

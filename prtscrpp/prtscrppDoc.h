@@ -5,7 +5,8 @@ interface of the CprtscrppDoc class
 
 #include "Bitmap.h"
 class CprtscrppDoc: public CDocument {
-    protected: // create from serialization only
+    protected:
+        // create from serialization only
         CprtscrppDoc();
         DECLARE_DYNCREATE(CprtscrppDoc)
         DECLARE_MESSAGE_MAP()
@@ -18,7 +19,9 @@ class CprtscrppDoc: public CDocument {
         afx_msg void OnCaptureArea();
         afx_msg void OnCaptureScreen();
         afx_msg void OnCaptureWindow();
+        CprtscrppDoc &getDoc();
 
     private:
         Bitmap Bitmap;
+        LRESULT OnHotKey(WPARAM a, LPARAM b);
 };

@@ -25,6 +25,7 @@ END_MESSAGE_MAP()
 
 // Constructor
 CprtscrppApp::CprtscrppApp() {
+    
     // Add support for Restart Manager
     m_dwRestartManagerSupportFlags = AFX_RESTART_MANAGER_SUPPORT_ALL_ASPECTS;
 

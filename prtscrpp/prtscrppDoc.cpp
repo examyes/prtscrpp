@@ -54,12 +54,18 @@ Bitmap &CprtscrppDoc::getBitmap() { return Bitmap; }
 void CprtscrppDoc::OnCaptureArea() {
     // Spawn a rectangle
     CRect rectangle;
+    INT_PTR nRet = -1; // This'll grab the response from the dialog
     
     // Construct the area DIALOG object
     AreaSelection areaObject(rectangle); // This will set the rectangle to be empty
-    areaObject.DoModal();
+    nRet = areaObject.DoModal();
 
-    Bitmap.GrabArea(rectangle); // Bitmap (CImage) now contains image data.
+    if(nRet == IDOK) { // If left button was hit, it means all went well and we captured something
+        Bitmap.GrabArea(rectangle); // Bitmap (CImage) now contains image data.
+    }else { // Otherwise, right button was pressed, which means it was an accident.
+        Bitmap.Detach();
+        Bitmap.Destroy();
+    }
 
     AfxGetMainWnd()->ShowWindow(SW_SHOW);
     UpdateAllViews(NULL);
@@ -85,3 +91,5 @@ void CprtscrppDoc::OnCaptureScreen() {
 void CprtscrppDoc::OnCaptureWindow() {
     // TODO: Add your command handler code here
 }
+
+CprtscrppDoc & CprtscrppDoc::getDoc() { return *this; }
