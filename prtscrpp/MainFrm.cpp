@@ -9,11 +9,14 @@ MainFrm.cpp : implementation of the CMainFrame class
 #ifdef _DEBUG
     #define new DEBUG_NEW
 #endif
+#define MYWM_NOTIFYICON (WM_USER+2)
 
 // CMainFrame
 IMPLEMENT_DYNCREATE(CMainFrame, CFrameWnd)
 BEGIN_MESSAGE_MAP(CMainFrame, CFrameWnd)
     ON_WM_CREATE()
+    ON_WM_CLOSE()
+    ON_WM_SYSCOMMAND()
 END_MESSAGE_MAP()
 
 // Status line indicators
@@ -26,11 +29,11 @@ static UINT indicators[] =
 };
 
 CMainFrame::CMainFrame() {
-    // TODO: Add keyboard hook and settings loader here.
+    // TODO: Add settings loader here?
 }
 
 CMainFrame::~CMainFrame() {
-    // TODO: Remove RegisterHotKey and destruct everything?
+    // TODO: Destroy settings loader here?
 }
 
 int CMainFrame::OnCreate(LPCREATESTRUCT lpCreateStruct) {
@@ -57,11 +60,20 @@ int CMainFrame::OnCreate(LPCREATESTRUCT lpCreateStruct) {
     EnableDocking(CBRS_ALIGN_ANY);
     DockControlBar(&m_wndToolBar);*/
 
+    // Initialize our tray icon here.
+    TrayMessage(NIM_ADD);
+
     return 0;
 }
 
+void CMainFrame::OnClose() {
+    // Destroy the tray icon here :)
+    TrayMessage(NIM_DELETE);
+    CFrameWnd::OnClose();
+}
+
 BOOL CMainFrame::PreCreateWindow(CREATESTRUCT& cs) {
-    // Size the window and center it -- msdn
+    // Size the window accordingly and center it.
     cs.cy = ::GetSystemMetrics(SM_CYSCREEN) / 2;
     cs.cx = ::GetSystemMetrics(SM_CXSCREEN) / 2;
     cs.y = ((cs.cy * 2) - cs.cy) / 2;
@@ -70,6 +82,23 @@ BOOL CMainFrame::PreCreateWindow(CREATESTRUCT& cs) {
     if(!CFrameWnd::PreCreateWindow(cs)) return FALSE;
 
     return TRUE;
+}
+
+BOOL CMainFrame::TrayMessage(DWORD dwMessage) {
+    CString sTip(_T("prtscrpp")); // Tooltip
+
+    NOTIFYICONDATA tnd; // Shell32 struct which contains all the needed info to display the trayicon.
+    tnd.cbSize = sizeof(NOTIFYICONDATA);
+    tnd.hWnd = m_hWnd;
+    tnd.uID = IDR_MAINFRAME; // The bitmap of the trayicon.
+    tnd.uFlags = NIF_MESSAGE | NIF_ICON;
+    tnd.uCallbackMessage = MYWM_NOTIFYICON;
+    tnd.uFlags = NIF_MESSAGE | NIF_ICON | NIF_TIP;
+    VERIFY(tnd.hIcon = LoadIcon(AfxGetInstanceHandle(),
+        MAKEINTRESOURCE(IDR_MAINFRAME)));
+    lstrcpyn(tnd.szTip, (LPCTSTR)sTip, sizeof(tnd.szTip));
+
+    return Shell_NotifyIcon(dwMessage, &tnd);
 }
 
 // CMainFrame diagnostics
@@ -82,3 +111,37 @@ void CMainFrame::Dump(CDumpContext& dc) const {
     CFrameWnd::Dump(dc);
 }
 #endif //_DEBUG
+
+// Catch any events that happen in the MainFrame
+LRESULT CMainFrame::WindowProc(UINT message, WPARAM wParam, LPARAM lParam) {
+    // We are only interested in the NOTIFYICON event.
+    if(message != MYWM_NOTIFYICON) return CFrameWnd::WindowProc(message, wParam, lParam);
+
+    // Try to figure out what kind of a mouse click was performed
+    switch(lParam) {
+        case WM_LBUTTONDBLCLK: // Double left click
+            if(wParam == IDR_MAINFRAME) {
+                ShowWindow(SW_NORMAL);
+                SetForegroundWindow();
+                SetFocus();
+                return TRUE;
+            }
+        break;
+        case WM_RBUTTONDBLCLK: // Double right click
+            this->OnClose();
+            return TRUE;
+        break;
+    }
+
+    return CFrameWnd::WindowProc(message, wParam, lParam);
+}
+
+// Hook any system events (Minimize, maximize, move, etc...)
+void CMainFrame::OnSysCommand(UINT nID, LPARAM lParam) {
+    CFrameWnd::OnSysCommand(nID, lParam);
+
+    if(nID == SC_MINIMIZE) {
+        // If we've caught minimization, then try to grab the App's mainWnd and hide it.
+        AfxGetApp()->m_pMainWnd->ShowWindow(SW_HIDE);
+    }
+}
