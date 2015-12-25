@@ -92,5 +92,5 @@ void CprtscrppView::OnHotKey(UINT nHotKeyId, UINT nKey1, UINT nKey2)
 {
     // TODO: Add your message handler code here and/or call default
     TRACE("HOKTEY ACTIVATEDDDDDDDDDDD");
-    //CScrollView::OnHotKey(nHotKeyId, nKey1, nKey2);
+    return CScrollView::OnHotKey(nHotKeyId, nKey1, nKey2);
 }

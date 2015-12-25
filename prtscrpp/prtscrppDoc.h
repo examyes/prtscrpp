@@ -19,9 +19,7 @@ class CprtscrppDoc: public CDocument {
         afx_msg void OnCaptureArea();
         afx_msg void OnCaptureScreen();
         afx_msg void OnCaptureWindow();
-        CprtscrppDoc &getDoc();
 
     private:
         Bitmap Bitmap;
-        LRESULT OnHotKey(WPARAM a, LPARAM b);
 };

@@ -91,5 +91,3 @@ void CprtscrppDoc::OnCaptureScreen() {
 void CprtscrppDoc::OnCaptureWindow() {
     // TODO: Add your command handler code here
 }
-
-CprtscrppDoc & CprtscrppDoc::getDoc() { return *this; }

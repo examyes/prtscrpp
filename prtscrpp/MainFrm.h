@@ -11,10 +11,10 @@ class CMainFrame : public CFrameWnd {
     public:
         virtual BOOL PreCreateWindow(CREATESTRUCT& cs);
         virtual ~CMainFrame();
-    #ifdef _DEBUG
-        virtual void AssertValid() const;
-        virtual void Dump(CDumpContext& dc) const;
-    #endif
+        #ifdef _DEBUG
+            virtual void AssertValid() const;
+            virtual void Dump(CDumpContext& dc) const;
+        #endif
 
     // Control bar embedded members
     protected:
