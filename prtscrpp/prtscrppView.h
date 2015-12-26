@@ -25,4 +25,6 @@ class CprtscrppView: public CScrollView {
     private:
         // Store the Doc ptr here for future use!
         CprtscrppDoc *pDoc;
+public:
+    afx_msg void OnFileOpen();
 };

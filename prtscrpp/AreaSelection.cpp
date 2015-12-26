@@ -36,7 +36,7 @@ BOOL AreaSelection::OnInitDialog() {
     CRect wholeScreen = CRect(0, 0, GetSystemMetrics(SM_CXSCREEN), GetSystemMetrics(SM_CYSCREEN));
 
     AfxGetMainWnd()->ShowWindow(SW_HIDE); // Hide prtscrpp
-    Sleep(100); // Let it hide.
+    Sleep(200); // Let it hide.
 
     // Grab an area of the whole screen. Control this via the rubberBand (alla QT/QRubberBand).
     grabArea = Bitmap.GrabArea(wholeScreen);
@@ -63,9 +63,13 @@ void AreaSelection::OnPaint() {
 }
 
 void AreaSelection::OnLButtonDown(UINT nFlags, CPoint point)  {
+    // Set the cursor first
+    SetCursor(AfxGetApp()->LoadStandardCursor(IDC_CROSS));
+
     // Track the area which we would like to screenshot
     rectangleTracker.TrackRubberBand(this, point);
     rectangleTracker.GetTrueRect(rectangle);
+
     EndDialog(IDOK); // All good.
 }
 

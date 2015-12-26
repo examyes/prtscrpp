@@ -18,11 +18,10 @@ IMPLEMENT_DYNCREATE(CprtscrppView, CScrollView)
 BEGIN_MESSAGE_MAP(CprtscrppView, CScrollView)
     ON_WM_HOTKEY()
     ON_COMMAND(ID_FILE_SAVE, &CprtscrppView::OnFileSave)
+    ON_COMMAND(ID_FILE_OPEN, &CprtscrppView::OnFileOpen)
 END_MESSAGE_MAP()
 
-CprtscrppView::CprtscrppView() {
-    // Try to fetch the document.
-}
+CprtscrppView::CprtscrppView() {}
 CprtscrppView::~CprtscrppView() {}
 
 void CprtscrppView::DoDataExchange(CDataExchange* pDX) {
@@ -108,23 +107,63 @@ void CprtscrppView::OnFileSave() {
     // Filter for files types that can be saved. We can support GIF,PNG,JPG,BMP (uncompressed)
     TCHAR szFilters[] = _T("24-bit Uncompressed Bitmap (*.bmp)|*.bmp|Portable Network Graphics (*.png)|*.png|Joint Photographic Experts Group (*.jpg)|*.jpg|Graphics Interchange Format (*.gif)|*.gif||");
 
-    // Create a save dialog; the default file name extension is .jpg
+    // Create a save dialog; the default file name extension is .png
     CFileDialog fileDlg(FALSE, _T("png"), _T("*.png"), OFN_FILEMUSTEXIST | OFN_HIDEREADONLY, szFilters);
 
-    // Display the file dialog. When user clicks OK, fileDlg.DoModal() returns OK
+    // Display the file dialog. When user clicks OK, fileDlg.DoModal() returns IDOK
     if(fileDlg.DoModal() == IDOK) {
-        CString pathName = fileDlg.GetPathName();
-        CString pathExt  = fileDlg.GetFileExt();
+        CString pathName = fileDlg.GetPathName(); // Grab the name
+        CString pathExt  = fileDlg.GetFileExt(); // And the extension
 
-        // Change the window's title to the opened file's title.
+        // Get the file's title.
         CString fileName = fileDlg.GetFileTitle();
 
         // Just save, CImage automatically figures out the Gdiplus constant based on the extension ;)
         if(Bitmap.Save(pathName) == S_OK) {
             // Set the window title accordingly.
-            AfxGetMainWnd()->SetWindowText(fileName + pathExt + CString(" - prtscrpp"));
+            AfxGetMainWnd()->SetWindowText(fileName + "." + pathExt + CString(" - prtscrpp"));
         }else {
             AfxMessageBox(_T("There has been a problem saving your file."));
+        }
+    }
+}
+
+void CprtscrppView::OnFileOpen() {
+    // Try to fetch the bitmap first
+    Bitmap &Bitmap = this->pDoc->getBitmap();
+    if(!Bitmap.IsNull()) { // There is already a bitmap!
+        AfxMessageBox(_T("There is a bitmap currently loaded, consider saving?"));
+    }
+
+    // Filter for files types that can be saved. We can support GIF,PNG,JPG,BMP (uncompressed)
+    TCHAR szFilters[] = _T("Data Files (*.png;*.jpg;*.bmp;*.gif)|*.png; *.jpg; *.bmp; *.gif||");
+
+    // Create an Open dialog; the default file name extension is .png
+    CFileDialog fileDlg(TRUE, _T(""), _T(""), OFN_FILEMUSTEXIST | OFN_HIDEREADONLY, szFilters);
+
+    // Display the file dialog. When user clicks OK, fileDlg.DoModal() returns IDOK
+    if(fileDlg.DoModal() == IDOK) {
+        CString pathName = fileDlg.GetPathName(); // Grab the name
+        CString pathExt  = fileDlg.GetFileExt(); // And the extension
+
+        // Get the file title
+        CString fileName = fileDlg.GetFileTitle();
+
+        // First detach and destroy the old bitmap if it exists.
+        if(!Bitmap.IsNull()) {
+            Bitmap.Detach();
+            Bitmap.Destroy();
+        }
+
+        // Now load the new one.
+        if(Bitmap.Load(pathName) == S_OK) { // We good
+            //Change the window's title to the opened file's title.
+            AfxGetMainWnd()->SetWindowText(fileName + "." + pathExt + CString(" - prtscrpp"));
+
+            SetWindowText(fileName);
+            this->pDoc->UpdateAllViews(NULL);
+        }else {
+            AfxMessageBox(_T("There has been a problem loading the file."));
         }
     }
 }

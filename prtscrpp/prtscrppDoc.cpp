@@ -78,7 +78,7 @@ void CprtscrppDoc::OnCaptureScreen() {
     BOOL grabArea;
 
     mainWnd->ShowWindow(SW_HIDE);
-    Sleep(100); // So it can hide itself fully.
+    Sleep(200); // So it can hide itself fully.
 
     // Construct a rectangle of full screen width & height. Top, left = 0, right = resolution width, height = resolution height.
     CRect wholeScreen = CRect(0, 0, GetSystemMetrics(SM_CXSCREEN), GetSystemMetrics(SM_CYSCREEN));
