@@ -112,12 +112,12 @@ void CprtscrppView::OnFileSave() {
     TCHAR szFilters[] = _T("24-bit Uncompressed Bitmap (*.bmp)|*.bmp|Portable Network Graphics (*.png)|*.png|Joint Photographic Experts Group (*.jpg)|*.jpg|Graphics Interchange Format (*.gif)|*.gif||");
 
     // Create a save dialog; the default file name extension is .jpg
-    CFileDialog fileDlg(FALSE, _T("jpg"), _T("*.jpg"), OFN_FILEMUSTEXIST | OFN_HIDEREADONLY, szFilters);
+    CFileDialog fileDlg(FALSE, _T("png"), _T("*.png"), OFN_FILEMUSTEXIST | OFN_HIDEREADONLY, szFilters);
 
     // Display the file dialog. When user clicks OK, fileDlg.DoModal() returns OK
     if(fileDlg.DoModal() == IDOK) {
         CString pathName = fileDlg.GetPathName();
-        //CString pathExt  = fileDlg.GetFileExt();
+        CString pathExt  = fileDlg.GetFileExt();
 
         // Change the window's title to the opened file's title.
         CString fileName = fileDlg.GetFileTitle();
@@ -125,7 +125,7 @@ void CprtscrppView::OnFileSave() {
         // Just save, CImage automatically figures out the Gdiplus constant based on the extension ;)
         if(Bitmap.Save(pathName) == S_OK) {
             // Set the window title accordingly.
-            AfxGetMainWnd()->SetWindowText(fileName + CString(" - prtscrpp"));
+            AfxGetMainWnd()->SetWindowText(fileName + pathExt + CString(" - prtscrpp"));
         }else {
             AfxMessageBox(_T("There has been a problem saving your file."));
         }
