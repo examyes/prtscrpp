@@ -17,10 +17,11 @@ implementation of the CprtscrppView class
 IMPLEMENT_DYNCREATE(CprtscrppView, CScrollView)
 BEGIN_MESSAGE_MAP(CprtscrppView, CScrollView)
     ON_WM_HOTKEY()
+    ON_COMMAND(ID_FILE_SAVE, &CprtscrppView::OnFileSave)
 END_MESSAGE_MAP()
 
 CprtscrppView::CprtscrppView() {
-    // TODO: add construction code here
+    // Try to fetch the document.
 }
 CprtscrppView::~CprtscrppView() {}
 
@@ -37,6 +38,10 @@ void CprtscrppView::OnInitialUpdate() {
     RegisterHotKey(m_hWnd, 100, MOD_CONTROL, 0x34);
     CSize size(100, 100);
     SetScrollSizes(MM_TEXT, size);
+
+    this->pDoc = GetDocument();
+    ASSERT_VALID(this->pDoc);
+    if(!this->pDoc) return;
 }
 
 CprtscrppDoc* CprtscrppView::GetDocument() const {
@@ -93,4 +98,36 @@ void CprtscrppView::OnHotKey(UINT nHotKeyId, UINT nKey1, UINT nKey2)
     // TODO: Add your message handler code here and/or call default
     TRACE("HOKTEY ACTIVATEDDDDDDDDDDD");
     return CScrollView::OnHotKey(nHotKeyId, nKey1, nKey2);
+}
+
+void CprtscrppView::OnFileSave() {
+    // Try to fetch the bitmap first
+    Bitmap &Bitmap = this->pDoc->getBitmap();
+    if(Bitmap.IsNull()) { // The bitmap is NULL, nothing has been saved, just return.
+        AfxMessageBox(_T("There is either no bitmap loaded or it has been corrupted."));
+        return;
+    }
+
+    // Filter for files types that can be saved. We can support GIF,PNG,JPG,BMP (uncompressed)
+    TCHAR szFilters[] = _T("24-bit Uncompressed Bitmap (*.bmp)|*.bmp|Portable Network Graphics (*.png)|*.png|Joint Photographic Experts Group (*.jpg)|*.jpg|Graphics Interchange Format (*.gif)|*.gif||");
+
+    // Create a save dialog; the default file name extension is .jpg
+    CFileDialog fileDlg(FALSE, _T("jpg"), _T("*.jpg"), OFN_FILEMUSTEXIST | OFN_HIDEREADONLY, szFilters);
+
+    // Display the file dialog. When user clicks OK, fileDlg.DoModal() returns OK
+    if(fileDlg.DoModal() == IDOK) {
+        CString pathName = fileDlg.GetPathName();
+        //CString pathExt  = fileDlg.GetFileExt();
+
+        // Change the window's title to the opened file's title.
+        CString fileName = fileDlg.GetFileTitle();
+
+        // Just save, CImage automatically figures out the Gdiplus constant based on the extension ;)
+        if(Bitmap.Save(pathName) == S_OK) {
+            // Set the window title accordingly.
+            AfxGetMainWnd()->SetWindowText(fileName + CString(" - prtscrpp"));
+        }else {
+            AfxMessageBox(_T("There has been a problem saving your file."));
+        }
+    }
 }

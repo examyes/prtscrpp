@@ -20,4 +20,9 @@ class CprtscrppView: public CScrollView {
         void drawText(CDC * pDC); // draws text when there is no bitmap
 
         afx_msg void OnHotKey(UINT nHotKeyId, UINT nKey1, UINT nKey2);
+        afx_msg void OnFileSave();
+
+    private:
+        // Store the Doc ptr here for future use!
+        CprtscrppDoc *pDoc;
 };
