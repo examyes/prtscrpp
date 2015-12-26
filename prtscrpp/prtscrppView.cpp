@@ -159,11 +159,11 @@ void CprtscrppView::OnFileOpen() {
         if(Bitmap.Load(pathName) == S_OK) { // We good
             //Change the window's title to the opened file's title.
             AfxGetMainWnd()->SetWindowText(fileName + "." + pathExt + CString(" - prtscrpp"));
-
-            SetWindowText(fileName);
-            this->pDoc->UpdateAllViews(NULL);
         }else {
             AfxMessageBox(_T("There has been a problem loading the file."));
         }
     }
+
+    // Update.
+    this->pDoc->UpdateAllViews(NULL);
 }
