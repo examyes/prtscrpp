@@ -55,7 +55,7 @@ void CprtscrppDoc::OnCaptureArea() {
     // Spawn a rectangle
     CRect rectangle;
     INT_PTR nRet = -1; // This'll grab the response from the dialog
-    
+
     // Construct the area DIALOG object
     AreaSelection areaObject(rectangle); // This will set the rectangle to be empty
     nRet = areaObject.DoModal();
@@ -63,8 +63,10 @@ void CprtscrppDoc::OnCaptureArea() {
     if(nRet == IDOK) { // If left button was hit, it means all went well and we captured something
         Bitmap.GrabArea(rectangle); // Bitmap (CImage) now contains image data.
     }else { // Otherwise, right button was pressed, which means it was an accident.
-        Bitmap.Detach();
-        Bitmap.Destroy();
+        if(!Bitmap.IsNull()) { // Perhaps the right button was pressed on the first screenshot capture, when there was not a Bitmap at all.
+            Bitmap.Detach();
+            Bitmap.Destroy();
+        }
     }
 
     AfxGetMainWnd()->ShowWindow(SW_SHOW);

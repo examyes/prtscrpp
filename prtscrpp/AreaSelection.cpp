@@ -23,6 +23,7 @@ BEGIN_MESSAGE_MAP(AreaSelection, CDialog)
     ON_WM_LBUTTONDOWN()
     ON_WM_RBUTTONDOWN()
     ON_WM_SETCURSOR()
+    ON_WM_MOUSEMOVE()
 END_MESSAGE_MAP()
 
 
@@ -73,8 +74,14 @@ void AreaSelection::OnRButtonDown(UINT nFlags, CPoint point) {
 }
 
 BOOL AreaSelection::OnSetCursor(CWnd* pWnd, UINT nHitTest, UINT message) {
-    // give the tracker for the selection a chance
-    //if(rectangleTracker.SetCursor(this, nHitTest)) return TRUE;
+    // give the tracker for the selection a chance.
+    // TODO: Is this really needed lol???
     SetCursor(AfxGetApp()->LoadStandardCursor(IDC_CROSS));
     return CDialog::OnSetCursor(pWnd, nHitTest, message);
+}
+
+void AreaSelection::OnMouseMove(UINT nFlags, CPoint point) {
+    // Change the cursor to a cross so we know we're going to take a screenie
+    SetCursor(AfxGetApp()->LoadStandardCursor(IDC_CROSS));
+    CDialog::OnMouseMove(nFlags, point);
 }

@@ -38,10 +38,6 @@ void CprtscrppView::OnInitialUpdate() {
     RegisterHotKey(m_hWnd, 100, MOD_CONTROL, 0x34);
     CSize size(100, 100);
     SetScrollSizes(MM_TEXT, size);
-
-    this->pDoc = GetDocument();
-    ASSERT_VALID(this->pDoc);
-    if(!this->pDoc) return;
 }
 
 CprtscrppDoc* CprtscrppView::GetDocument() const {
@@ -51,11 +47,11 @@ CprtscrppDoc* CprtscrppView::GetDocument() const {
 
 // View area onDraw. Display the image if the bitmap exists.
 void CprtscrppView::OnDraw(CDC* pDC) {
-    CprtscrppDoc *pDoc = GetDocument();
+    /*CprtscrppDoc *pDoc = GetDocument();
     ASSERT_VALID(pDoc);
-    if(!pDoc) return;
+    if(!pDoc) return;*/
 
-    Bitmap &Bitmap = pDoc->getBitmap();
+    Bitmap &Bitmap = this->pDoc->getBitmap();
     if(Bitmap.IsNull()) {
         // There has been nothing captured or "new" button was pushed.
         this->drawText(pDC);
@@ -78,10 +74,11 @@ void CprtscrppView::drawText(CDC *pDC) {
 
 // Whenever an event occurs in the main area (image gets updated, window gets resized)
 void CprtscrppView::OnUpdate(CView*, LPARAM , CObject*) {
-    CprtscrppDoc *pDoc = GetDocument();
-    ASSERT_VALID(pDoc);
-    if(!pDoc) return;
+    this->pDoc = GetDocument();
+    ASSERT_VALID(this->pDoc);
+    if(!this->pDoc) return;
 
+    // Get the bitmap object
     Bitmap &Bitmap = pDoc->getBitmap();
 
     if(!Bitmap.IsNull()) { // If there is an image loaded then resize the app to fit the image.
