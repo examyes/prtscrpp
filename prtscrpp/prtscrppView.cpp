@@ -155,6 +155,12 @@ void CprtscrppView::OnFileOpen() {
             Bitmap.Destroy();
         }
 
+        // Hack, scroll to (0,0), this will hopefully cause it all to redraw properly.
+        POINT corner;
+        corner.x = 0;
+        corner.y = 0;
+        ScrollToPosition(corner);
+
         // Now load the new one.
         if(Bitmap.Load(pathName) == S_OK) { // We good
             //Change the window's title to the opened file's title.
@@ -165,5 +171,7 @@ void CprtscrppView::OnFileOpen() {
     }
 
     // Update.
+    this->OnDraw(GetDC());
+    AfxGetMainWnd()->ShowWindow(SW_SHOW);
     this->pDoc->UpdateAllViews(NULL);
 }
