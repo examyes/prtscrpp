@@ -28,4 +28,5 @@ class CprtscrppView: public CScrollView {
 public:
     afx_msg void OnFileOpen();
     afx_msg void OnEditPaste();
+    afx_msg void OnEditCopy();
 };

@@ -20,6 +20,7 @@ BEGIN_MESSAGE_MAP(CprtscrppView, CScrollView)
     ON_COMMAND(ID_FILE_SAVE, &CprtscrppView::OnFileSave)
     ON_COMMAND(ID_FILE_OPEN, &CprtscrppView::OnFileOpen)
     ON_COMMAND(ID_EDIT_PASTE, &CprtscrppView::OnEditPaste)
+    ON_COMMAND(ID_EDIT_COPY, &CprtscrppView::OnEditCopy)
 END_MESSAGE_MAP()
 
 CprtscrppView::CprtscrppView() {}
@@ -222,4 +223,23 @@ void CprtscrppView::OnEditPaste() {
     this->OnDraw(GetDC());
     AfxGetMainWnd()->ShowWindow(SW_SHOW);
     this->pDoc->UpdateAllViews(NULL);
+}
+
+void CprtscrppView::OnEditCopy() {
+    if(!OpenClipboard()) return; // Try to access the clipboard
+
+    Bitmap &Bitmap = this->pDoc->getBitmap();
+    if(Bitmap.IsNull()) { // There is no bitmap available or something is messed up.
+        AfxMessageBox(_T("There is no Bitmap data loaded into the application or it has been corrupt."));
+    }
+
+    // If we can't empty it then it's no use.
+    if(!EmptyClipboard()) {
+        AfxMessageBox(_T("Failed to empty the contents of the clipboard."));
+        return;
+    }
+
+    // Just set the data now?
+    SetClipboardData(CF_BITMAP, Bitmap); // This actually works lol
+    CloseClipboard();
 }
