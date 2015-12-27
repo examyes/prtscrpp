@@ -27,4 +27,5 @@ class CprtscrppView: public CScrollView {
         CprtscrppDoc *pDoc;
 public:
     afx_msg void OnFileOpen();
+    afx_msg void OnEditPaste();
 };

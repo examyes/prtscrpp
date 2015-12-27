@@ -19,6 +19,7 @@ BEGIN_MESSAGE_MAP(CprtscrppView, CScrollView)
     ON_WM_HOTKEY()
     ON_COMMAND(ID_FILE_SAVE, &CprtscrppView::OnFileSave)
     ON_COMMAND(ID_FILE_OPEN, &CprtscrppView::OnFileOpen)
+    ON_COMMAND(ID_EDIT_PASTE, &CprtscrppView::OnEditPaste)
 END_MESSAGE_MAP()
 
 CprtscrppView::CprtscrppView() {}
@@ -89,13 +90,14 @@ void CprtscrppView::OnUpdate(CView*, LPARAM , CObject*) {
     }
 }
 
-void CprtscrppView::OnHotKey(UINT nHotKeyId, UINT nKey1, UINT nKey2)
-{
+// Hotkey handler.
+void CprtscrppView::OnHotKey(UINT nHotKeyId, UINT nKey1, UINT nKey2) {
     // TODO: Add your message handler code here and/or call default
     TRACE("HOKTEY ACTIVATEDDDDDDDDDDD");
     return CScrollView::OnHotKey(nHotKeyId, nKey1, nKey2);
 }
 
+// Called when saving a file
 void CprtscrppView::OnFileSave() {
     // Try to fetch the bitmap first
     Bitmap &Bitmap = this->pDoc->getBitmap();
@@ -128,6 +130,7 @@ void CprtscrppView::OnFileSave() {
     }
 }
 
+// Called when opening a file
 void CprtscrppView::OnFileOpen() {
     // Try to fetch the bitmap first
     Bitmap &Bitmap = this->pDoc->getBitmap();
@@ -155,7 +158,7 @@ void CprtscrppView::OnFileOpen() {
             Bitmap.Destroy();
         }
 
-        // Hack, scroll to (0,0), this will hopefully cause it all to redraw properly.
+        // Hack, scroll to (0,0), this will -hopefully- cause it all to redraw properly.
         POINT corner;
         corner.x = 0;
         corner.y = 0;
@@ -163,7 +166,7 @@ void CprtscrppView::OnFileOpen() {
 
         // Now load the new one.
         if(Bitmap.Load(pathName) == S_OK) { // We good
-            //Change the window's title to the opened file's title.
+            // Change the window's title to the opened file's title.
             AfxGetMainWnd()->SetWindowText(fileName + "." + pathExt + CString(" - prtscrpp"));
         }else {
             AfxMessageBox(_T("There has been a problem loading the file."));
@@ -171,6 +174,51 @@ void CprtscrppView::OnFileOpen() {
     }
 
     // Update.
+    this->OnDraw(GetDC());
+    AfxGetMainWnd()->ShowWindow(SW_SHOW);
+    this->pDoc->UpdateAllViews(NULL);
+}
+
+void CprtscrppView::OnEditPaste() {
+    if(!OpenClipboard()) return;
+
+    // Fetch the bitmap
+    Bitmap &Bitmap = this->pDoc->getBitmap();
+
+    // If an existing bitmap exists, destroy it
+    if(!Bitmap.IsNull()) {
+        Bitmap.Detach();
+        Bitmap.Destroy();
+    }
+
+    //Get the clipboard data
+    HBITMAP handle = (HBITMAP)GetClipboardData(CF_BITMAP);
+    if(!handle) {
+        CloseClipboard();
+        return;
+    }
+    
+    // If an existing bitmap exists, detach from it.
+    if(!Bitmap.IsNull()) Bitmap.Detach();
+    
+    // Try to copy the bitmap into an HBITMAP object, FML direct handling doesn't work 
+    HBITMAP m_hbitmap = (HBITMAP)CopyImage(
+        (HBITMAP)GetClipboardData(CF_BITMAP),
+        IMAGE_BITMAP,
+        0,
+        0,
+        LR_COPYRETURNORG); // copy the handle to make atlimage.h shut up
+    CloseClipboard(); // Finally close the clipboard
+
+    // Hack the rescroll so it redraws properly.
+    POINT corner;
+    corner.x = 0;
+    corner.y = 0;
+    ScrollToPosition(corner);
+
+    Bitmap.Attach(m_hbitmap); // And attach our new image
+    
+    // Update all the windows here
     this->OnDraw(GetDC());
     AfxGetMainWnd()->ShowWindow(SW_SHOW);
     this->pDoc->UpdateAllViews(NULL);
