@@ -93,8 +93,12 @@ void CprtscrppView::OnUpdate(CView*, LPARAM , CObject*) {
 
 // Hotkey handler.
 void CprtscrppView::OnHotKey(UINT nHotKeyId, UINT nKey1, UINT nKey2) {
-    // TODO: Add your message handler code here and/or call default
     TRACE("HOKTEY ACTIVATEDDDDDDDDDDD");
+
+    // Always hide before sending a notification!
+    AfxGetApp()->m_pMainWnd->ShowWindow(SW_HIDE);
+    this->pDoc->SendTrayNotification(CString("HOTKEY ACTIVATEDDDDDDDDDDD"));
+
     return CScrollView::OnHotKey(nHotKeyId, nKey1, nKey2);
 }
 

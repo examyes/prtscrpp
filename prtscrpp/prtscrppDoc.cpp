@@ -93,3 +93,34 @@ void CprtscrppDoc::OnCaptureScreen() {
 void CprtscrppDoc::OnCaptureWindow() {
     // TODO: Add your command handler code here
 }
+
+void CprtscrppDoc::SendTrayNotification(CString body) {
+    // Get the main window
+    CWnd *mainWnd = AfxGetMainWnd();
+    bool wasHidden = false;
+
+    // Find out whether it was minimized (iconic/hidden) or not.
+    if(mainWnd->IsIconic()) wasHidden = true;
+
+    // Show the main window -- This is needed because Windows for some reason doesn't process background notifications in some sort of a queue.
+    AfxGetMainWnd()->ShowWindow(SW_SHOW);
+    ShowWindow(GetActiveWindow(), SW_SHOW); // TODO: is this one needed?
+    SetFocus(GetActiveWindow());
+
+    NOTIFYICONDATA data; // Construct the new Shell32 struct with notification data in it
+    data.hWnd = GetActiveWindow(); // Retrieve the active Window (now, the main window)
+    data.cbSize = sizeof(NOTIFYICONDATA);
+    //data.hIcon = LoadIcon(hInst, MAKEINTRESOURCE(IDI_INFO));
+    data.uID = IDR_MAINFRAME;
+    data.uTimeout = 5000; // in miliseconds
+    data.uFlags = NIF_INFO;
+    data.dwInfoFlags = NIIF_INFO | NIF_MESSAGE;
+    //_tcscpy_s(data.szTip, _T("sz tip?"));
+    _tcscpy_s(data.szInfoTitle, _T("prtscrpp"));
+    _tcscpy_s(data.szInfo, body);
+    Shell_NotifyIcon(NIM_MODIFY, &data);
+
+    // Small hack, 
+    // Hide the main window now if it was originally hidden, user can't notice this anyway since it happens instantly.
+    if(wasHidden) AfxGetMainWnd()->ShowWindow(SW_HIDE);
+}
