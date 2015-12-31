@@ -9,6 +9,7 @@ class CprtscrppView: public CScrollView {
         virtual void DoDataExchange(CDataExchange* pDX); // DDX/DDV support
         virtual void OnInitialUpdate(); // called first time after construct
         virtual void OnUpdate(CView* /*pSender*/, LPARAM /*lHint*/, CObject* /*pHint*/);
+        void updateClipboard(std::string link);
         DECLARE_MESSAGE_MAP()
 
     public:
@@ -16,17 +17,18 @@ class CprtscrppView: public CScrollView {
         CprtscrppView();
         virtual ~CprtscrppView();
         virtual BOOL PreCreateWindow(CREATESTRUCT& cs);
+
         void OnDraw(CDC * pDC); // overridden to draw this view
         void drawText(CDC * pDC); // draws text when there is no bitmap
+        void handleUpload(); // Handles file upload.
 
-        afx_msg void OnHotKey(UINT nHotKeyId, UINT nKey1, UINT nKey2);
+        afx_msg void OnHotKey(UINT nHotKeyId, UINT nKey1, UINT nKey2); // HotKey handler
         afx_msg void OnFileSave();
+        afx_msg void OnFileOpen();
+        afx_msg void OnEditPaste();
+        afx_msg void OnEditCopy();
+        afx_msg void OnEditCut();
 
     private:
-        // Store the Doc ptr here for future use!
-        CprtscrppDoc *pDoc;
-public:
-    afx_msg void OnFileOpen();
-    afx_msg void OnEditPaste();
-    afx_msg void OnEditCopy();
+        CprtscrppDoc *pDoc; // Store the Doc ptr here for future use!
 };

@@ -7,8 +7,11 @@ implementation of the CprtscrppView class
     #include "prtscrpp.h"
 #endif
 
+#include <string>
+#include <omp.h>
 #include "prtscrppDoc.h"
 #include "prtscrppView.h"
+#include "Uploader.h"
 
 #ifdef _DEBUG
     #define new DEBUG_NEW
@@ -21,6 +24,7 @@ BEGIN_MESSAGE_MAP(CprtscrppView, CScrollView)
     ON_COMMAND(ID_FILE_OPEN, &CprtscrppView::OnFileOpen)
     ON_COMMAND(ID_EDIT_PASTE, &CprtscrppView::OnEditPaste)
     ON_COMMAND(ID_EDIT_COPY, &CprtscrppView::OnEditCopy)
+    ON_COMMAND(ID_EDIT_CUT, &CprtscrppView::OnEditCut)
 END_MESSAGE_MAP()
 
 CprtscrppView::CprtscrppView() {}
@@ -36,7 +40,7 @@ BOOL CprtscrppView::PreCreateWindow(CREATESTRUCT& cs) {
 
 // https://msdn.microsoft.com/en-us/library/3ew6s3ez.aspx
 void CprtscrppView::OnInitialUpdate() {
-    RegisterHotKey(m_hWnd, 100, MOD_CONTROL, 0x34);
+    RegisterHotKey(m_hWnd, 100, MOD_CONTROL, 0x2C); // 0x34
     CSize size(100, 100);
     SetScrollSizes(MM_TEXT, size);
 }
@@ -91,15 +95,86 @@ void CprtscrppView::OnUpdate(CView*, LPARAM , CObject*) {
     }
 }
 
+void CprtscrppView::updateClipboard(std::string link) {
+    // Try to opent he clipboard
+    if(!OpenClipboard()) {
+        AfxMessageBox(_T("Cannot open the Clipboard."));
+        return;
+    }
+
+    // Remove the current Clipboard contents
+    if(!EmptyClipboard()) {
+        AfxMessageBox(_T("Failed to empty the Clipboard."));
+        return;
+    }
+
+    // Get the currently selected data
+    HGLOBAL hGlob = GlobalAlloc(GMEM_FIXED, 64); // 64 should do it.
+    strcpy_s((char*)hGlob, 64, link.c_str());
+
+    // For the appropriate data formats...
+    if(::SetClipboardData(CF_TEXT, hGlob) == NULL) {
+        CString msg;
+        msg.Format(_T("Unable to set Clipboard data, error: %d"), GetLastError());
+        AfxMessageBox(msg);
+        CloseClipboard();
+        GlobalFree(hGlob);
+        return;
+    }
+
+    // Close here.
+    CloseClipboard();
+}
+
 // Hotkey handler.
 void CprtscrppView::OnHotKey(UINT nHotKeyId, UINT nKey1, UINT nKey2) {
-    TRACE("HOKTEY ACTIVATEDDDDDDDDDDD");
-
     // Always hide before sending a notification!
     AfxGetApp()->m_pMainWnd->ShowWindow(SW_HIDE);
-    this->pDoc->SendTrayNotification(CString("HOTKEY ACTIVATEDDDDDDDDDDD"));
+    this->pDoc->OnCaptureArea(); // Capture!
+    this->handleUpload(); // And just upload.
 
     return CScrollView::OnHotKey(nHotKeyId, nKey1, nKey2);
+}
+
+void CprtscrppView::handleUpload() {
+    // Get the bitmap
+    Bitmap &Bitmap = this->pDoc->getBitmap();
+    if(Bitmap.IsNull()) {
+        AfxMessageBox(_T("There is no image loaded."));
+        return;
+    }
+
+    // Try to save it. TODO: Add user options to choose their format here, for now we'll force png.
+    if(Bitmap.Save(_T("C:\\prtscrpp_temp.png")) != S_OK) {
+        this->pDoc->SendTrayNotification(CString("Failed to save the image to the disk."));
+        return;
+    }
+
+    // Benchmarking purposes
+    double timeStart = omp_get_wtime();
+
+    Uploader uploader; // Uploader instance
+    std::string link; // Our direct link \:D/
+
+    // Start the upload process!
+    link = uploader.imgur(CString("C:\\prtscrpp_temp.png"));
+
+    // Benchmarking...
+    double delta = omp_get_wtime() - timeStart;
+
+    // Check if our link is empty...
+    if(link.empty()) {
+        this->pDoc->SendTrayNotification(CString("Failed to upload. There was a problem with the API."));
+        return;
+    }
+
+    // Otherwise :D
+    CString notification;
+    notification.Format(_T("Uploaded successfully in %f second(s)"), delta);
+    this->pDoc->SendTrayNotification(notification);
+
+    // And finally, update our clipboard.
+    this->updateClipboard(link);
 }
 
 // Called when saving a file
@@ -244,6 +319,19 @@ void CprtscrppView::OnEditCopy() {
     }
 
     // Just set the data now?
-    SetClipboardData(CF_BITMAP, Bitmap); // This actually works lol
+    //SetClipboardData(CF_BITMAP, Bitmap); // This actually works lol -- it doesn't.
+    HBITMAP m_hbitmap = (HBITMAP)CopyImage(
+        Bitmap,
+        IMAGE_BITMAP,
+        0,
+        0,
+        LR_COPYRETURNORG); // copy the handle again...
+    SetClipboardData(CF_BITMAP, m_hbitmap);
     CloseClipboard();
+}
+
+// Copy+new
+void CprtscrppView::OnEditCut() {
+    this->OnEditCopy();
+    this->pDoc->OnNewDocument();
 }

@@ -2,11 +2,14 @@
 prtscrppDoc.cpp : implementation of the CprtscrppDoc class
 */
 #include "stdafx.h"
+
 #ifndef SHARED_HANDLERS
     #include "prtscrpp.h"
 #endif
 
+#include <string>
 #include "prtscrppDoc.h"
+#include "prtscrppView.h"
 #include "AreaSelection.h"
 #include <propkey.h>
 
@@ -69,7 +72,8 @@ void CprtscrppDoc::OnCaptureArea() {
         }
     }
 
-    AfxGetMainWnd()->ShowWindow(SW_SHOW);
+    // Show after taking the pic
+    //AfxGetMainWnd()->ShowWindow(SW_SHOW);
     UpdateAllViews(NULL);
 }
 
@@ -91,7 +95,15 @@ void CprtscrppDoc::OnCaptureScreen() {
 }
 
 void CprtscrppDoc::OnCaptureWindow() {
-    // TODO: Add your command handler code here
+    CWnd *mainWnd = AfxGetMainWnd(); // Retrieve main window
+    mainWnd->ShowWindow(SW_HIDE); // Hide it
+    Sleep(200); // Sleep some, to hide.
+
+    HWND hWnd = GetForegroundWindow(); // Now grab any foreground window
+    Bitmap.GrabWindow(hWnd);
+
+    mainWnd->ShowWindow(SW_SHOW); // Show our app!
+    UpdateAllViews(NULL);
 }
 
 void CprtscrppDoc::SendTrayNotification(CString body) {
@@ -115,7 +127,6 @@ void CprtscrppDoc::SendTrayNotification(CString body) {
     data.uTimeout = 5000; // in miliseconds
     data.uFlags = NIF_INFO;
     data.dwInfoFlags = NIIF_INFO | NIF_MESSAGE;
-    //_tcscpy_s(data.szTip, _T("sz tip?"));
     _tcscpy_s(data.szInfoTitle, _T("prtscrpp"));
     _tcscpy_s(data.szInfo, body);
     Shell_NotifyIcon(NIM_MODIFY, &data);

@@ -3,6 +3,7 @@ Defines the class behaviors for the application.
 */
 
 #include "stdafx.h"
+#include <string>
 #include "afxwinappex.h"
 #include "afxdialogex.h"
 #include "prtscrpp.h"
