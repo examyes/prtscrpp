@@ -34,7 +34,7 @@ BOOL CprtscrppDoc::OnNewDocument() {
     if(!CDocument::OnNewDocument()) return FALSE;
 
     if(!Bitmap.IsNull()) {
-        Bitmap.Detach();
+        //Bitmap.Detach();
         Bitmap.Destroy();
     }
 
@@ -67,7 +67,7 @@ void CprtscrppDoc::OnCaptureArea() {
         Bitmap.GrabArea(rectangle); // Bitmap (CImage) now contains image data.
     }else { // Otherwise, right button was pressed, which means it was an accident.
         if(!Bitmap.IsNull()) { // Perhaps the right button was pressed on the first screenshot capture, when there was not a Bitmap at all.
-            Bitmap.Detach();
+            //Bitmap.Detach();
             Bitmap.Destroy();
         }
     }

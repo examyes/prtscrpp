@@ -267,7 +267,7 @@ void CprtscrppView::OnEditPaste() {
 
     // If an existing bitmap exists, destroy it
     if(!Bitmap.IsNull()) {
-        Bitmap.Detach();
+        //Bitmap.Detach();
         Bitmap.Destroy();
     }
 
@@ -279,7 +279,7 @@ void CprtscrppView::OnEditPaste() {
     }
     
     // If an existing bitmap exists, detach from it.
-    if(!Bitmap.IsNull()) Bitmap.Detach();
+    //if(!Bitmap.IsNull()) Bitmap.Detach();
     
     // Try to copy the bitmap into an HBITMAP object, FML direct handling doesn't work 
     HBITMAP m_hbitmap = (HBITMAP)CopyImage(
