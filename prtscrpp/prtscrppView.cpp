@@ -235,7 +235,6 @@ void CprtscrppView::OnFileOpen() {
 
         // First detach and destroy the old bitmap if it exists.
         if(!Bitmap.IsNull()) {
-            Bitmap.Detach();
             Bitmap.Destroy();
         }
 

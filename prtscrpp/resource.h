@@ -15,13 +15,14 @@
 #define ID_BUTTON32783                  32783
 #define ID_CAPTURE_UPLOADTOIMGUR        32784
 #define ID_CAPTURE_TOIMGUR              32785
+#define ID_BUTTON32786                  32786
 
 // Next default values for new objects
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NEXT_RESOURCE_VALUE        315
-#define _APS_NEXT_COMMAND_VALUE         32786
+#define _APS_NEXT_COMMAND_VALUE         32787
 #define _APS_NEXT_CONTROL_VALUE         1002
 #define _APS_NEXT_SYMED_VALUE           311
 #endif
