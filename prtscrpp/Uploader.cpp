@@ -19,7 +19,15 @@ Uploader::Uploader() {
 Uploader::~Uploader() {
 }
 
-// xLink's amazing inBetween <3
+CString Uploader::getTempFile() {
+    TCHAR szPath[MAX_PATH];
+    GetTempPath(MAX_PATH, szPath);
+
+    // TODO: Add a custom format here someday.
+    return CString(szPath + CString("prtscrpp_temp.png"));
+}
+
+// xLink's amazing inBetween https://github.com/xLink/CybershadeCMS/blob/c9602626163c753d1a13eafa0a6a00a13822a11c/core/baseFunctions.php
 std::string InBetween(std::string content, std::string begin, std::string end) {
     if(content.empty() || begin.empty() || end.empty()) return _EMPTY;
 
@@ -61,12 +69,20 @@ CStringA Uploader::ToBase64(const void* bytes, int byteLength) {
     return base64;
 }
 
-std::string Uploader::imgur(CString fileLocation) {
+std::string Uploader::imgur() {
     FILE *fp; // File pointer
     unsigned char *buffer; // our buffer, a buffer of BYTE[]
     long fileLen; // Just the file length in bytes.
 
-    fp = fopen("C:\\prtscrpp_temp.png", "rb"); // Open the file in binary mode
+    // Convert the CStringW to a char* for fopen
+    CString absPath = this->getTempFile();
+    const size_t __path = (absPath.GetLength() + 1) * 2;
+    char *absPathChar = new char[__path];
+    size_t convertedCharsw = 0;
+    wcstombs_s(&convertedCharsw, absPathChar, __path, absPath, _TRUNCATE);
+
+    // Open the file in binary mode
+    fp = fopen(absPathChar, "rb");
     if(!fp) {
         AfxMessageBox(_T("Failed to open the screenshot file."));
         return _EMPTY;

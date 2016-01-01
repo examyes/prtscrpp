@@ -18,8 +18,12 @@ class CprtscrppView: public CScrollView {
         virtual ~CprtscrppView();
         virtual BOOL PreCreateWindow(CREATESTRUCT& cs);
 
+    private:
+        CprtscrppDoc *pDoc; // Store the Doc ptr here for future use!
+
         void OnDraw(CDC * pDC); // overridden to draw this view
         void drawText(CDC * pDC); // draws text when there is no bitmap
+        void ReScroll(); // Fixes rendering
         afx_msg void handleUpload(); // Handles file upload.
 
         afx_msg void OnHotKey(UINT nHotKeyId, UINT nKey1, UINT nKey2); // HotKey handler
@@ -28,7 +32,4 @@ class CprtscrppView: public CScrollView {
         afx_msg void OnEditPaste();
         afx_msg void OnEditCopy();
         afx_msg void OnEditCut();
-
-    private:
-        CprtscrppDoc *pDoc; // Store the Doc ptr here for future use!
 };

@@ -3,6 +3,7 @@ class Uploader {
     public:
         Uploader();
         ~Uploader();
-        std::string imgur(CString str);
+        CString getTempFile();
+        std::string imgur();
         CStringA ToBase64(const void* bytes, int byteLength);
 };

@@ -68,6 +68,13 @@ void CprtscrppView::OnDraw(CDC* pDC) {
     }
 }
 
+void CprtscrppView::ReScroll() {
+    POINT corner;
+    corner.x = 0;
+    corner.y = 0;
+    ScrollToPosition(corner);
+}
+
 void CprtscrppView::drawText(CDC *pDC) {
     CRect rect;
     CBrush brush(GetSysColor(COLOR_APPWORKSPACE)); // Load the brush color
@@ -138,27 +145,26 @@ void CprtscrppView::OnHotKey(UINT nHotKeyId, UINT nKey1, UINT nKey2) {
 }
 
 void CprtscrppView::handleUpload() {
-    // Get the bitmap
-    Bitmap &Bitmap = this->pDoc->getBitmap();
+    Bitmap &Bitmap = this->pDoc->getBitmap(); // Get the bitmap
+    Uploader uploader; // Uploader instance
+
     if(Bitmap.IsNull()) {
         AfxMessageBox(_T("There is no image loaded."));
         return;
     }
 
     // Try to save it. TODO: Add user options to choose their format here, for now we'll force png.
-    if(Bitmap.Save(_T("C:\\prtscrpp_temp.png")) != S_OK) {
+    if(Bitmap.Save(uploader.getTempFile()) != S_OK) {
         this->pDoc->SendTrayNotification(CString("Failed to save the image to the disk."));
         return;
     }
 
     // Benchmarking purposes
     double timeStart = omp_get_wtime();
-
-    Uploader uploader; // Uploader instance
-    std::string link; // Our direct link \:D/
+    std::string link; // Our direct link
 
     // Start the upload process!
-    link = uploader.imgur(CString("C:\\prtscrpp_temp.png"));
+    link = uploader.imgur();
 
     // Benchmarking...
     double delta = omp_get_wtime() - timeStart;
@@ -238,11 +244,8 @@ void CprtscrppView::OnFileOpen() {
             Bitmap.Destroy();
         }
 
-        // Hack, scroll to (0,0), this will -hopefully- cause it all to redraw properly.
-        POINT corner;
-        corner.x = 0;
-        corner.y = 0;
-        ScrollToPosition(corner);
+        // Hack, scroll to (0,0), this will cause it all to redraw properly.
+        this->ReScroll();
 
         // Now load the new one.
         if(Bitmap.Load(pathName) == S_OK) { // We good
@@ -291,10 +294,7 @@ void CprtscrppView::OnEditPaste() {
     CloseClipboard(); // Finally close the clipboard
 
     // Hack the rescroll so it redraws properly.
-    POINT corner;
-    corner.x = 0;
-    corner.y = 0;
-    ScrollToPosition(corner);
+    this->ReScroll();
 
     Bitmap.Attach(m_hbitmap); // And attach our new image
     
@@ -334,4 +334,5 @@ void CprtscrppView::OnEditCopy() {
 void CprtscrppView::OnEditCut() {
     this->OnEditCopy();
     this->pDoc->OnNewDocument();
+    this->ReScroll();
 }
