@@ -73,7 +73,7 @@ void CprtscrppDoc::OnCaptureArea() {
     }
 
     // Show after taking the pic
-    //AfxGetMainWnd()->ShowWindow(SW_SHOW);
+    AfxGetMainWnd()->ShowWindow(SW_SHOW);
     UpdateAllViews(NULL);
 }
 
