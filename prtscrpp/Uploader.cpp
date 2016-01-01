@@ -10,6 +10,7 @@
 #include "Uploader.h"
 
 #define _EMPTY ""
+#define new DEBUG_NEW
 
 Uploader::Uploader() {
     // Grab settings here in a variable.
@@ -75,8 +76,8 @@ std::string Uploader::imgur(CString fileLocation) {
     fileLen = ftell(fp); // Get the size
     rewind(fp); // Jump back to the beginning of the file
 
-    // Allocate enough memory + NULLBYTE (null terminated string eh)
-    buffer = (unsigned char *)malloc((fileLen + 1)*sizeof(unsigned char));
+    // Allocate memory
+    buffer = (unsigned char *)malloc((fileLen)*sizeof(unsigned char));
     if(!buffer) {
         AfxMessageBox(_T("Failed to allocate memory."));
         return _EMPTY;
@@ -123,6 +124,8 @@ std::string Uploader::imgur(CString fileLocation) {
     pFile->QueryInfoStatusCode(retCode);
     if(retCode != HTTP_STATUS_OK) { // API Failed
         AfxMessageBox(_T("API did not return 200 OK. Request failed."));
+
+        delete[] postDataChar;free(buffer);
         return _EMPTY;
     }
 
@@ -133,14 +136,14 @@ std::string Uploader::imgur(CString fileLocation) {
     // Check out if it's empty or not
     if(!szBuff) {
         AfxMessageBox(_T("Failed to retrieve a response."));
+
+        delete []postDataChar;delete []szBuff;free(buffer);
         return _EMPTY;
     }
 
     // Construct this into a std string
     std::string response(szBuff);
     response = InBetween(response, "<link>", "</link>"); // Grab the direct link.
-
-    //std::string response("<data type=\"array\" success=\"1\" status=\"200\"><id>1nShno5</id><title/><description/><datetime>1451559127</datetime><type>image/png</type><animated>false</animated><width>655</width><height>313</height><size>12642</size><views>0</views><bandwidth>0</bandwidth><vote/><favorite>false</favorite><nsfw/><section/><account_url/><account_id>0</account_id><comment_preview/><deletehash>OA0QRpVxvTXEMTS</deletehash><name/><link>http://i.imgur.com/1nShno5.png</link></data>様様様様様様様様様様様様様様様様様様様様様様様様様様様様様様様様様様様様様様様様様様様様様様様様様");
 
     // Cleanup
     delete[] szBuff;
