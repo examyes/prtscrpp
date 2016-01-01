@@ -20,7 +20,7 @@ class CprtscrppView: public CScrollView {
 
         void OnDraw(CDC * pDC); // overridden to draw this view
         void drawText(CDC * pDC); // draws text when there is no bitmap
-        void handleUpload(); // Handles file upload.
+        afx_msg void handleUpload(); // Handles file upload.
 
         afx_msg void OnHotKey(UINT nHotKeyId, UINT nKey1, UINT nKey2); // HotKey handler
         afx_msg void OnFileSave();

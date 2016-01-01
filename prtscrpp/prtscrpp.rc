@@ -196,7 +196,7 @@ IDR_MAINFRAME           BITMAP                  "res\\Toolbar.bmp"
 // Toolbar
 //
 
-IDR_MAINFRAME TOOLBAR 16, 15
+IDR_MAINFRAME TOOLBAR 19, 14
 BEGIN
     BUTTON      ID_FILE_NEW
     BUTTON      ID_FILE_OPEN
@@ -210,6 +210,7 @@ BEGIN
     BUTTON      ID_EDIT_COPY
     BUTTON      ID_EDIT_PASTE
     SEPARATOR
+    BUTTON      ID_BUTTON32783
     BUTTON      ID_APP_ABOUT
 END
 
@@ -248,6 +249,8 @@ BEGIN
         MENUITEM "Area",                        ID_CAPTURE_AREA
         MENUITEM "Screen",                      ID_CAPTURE_SCREEN
         MENUITEM "Window",                      ID_CAPTURE_WINDOW
+        MENUITEM SEPARATOR
+        MENUITEM "Share to Imgur",              ID_CAPTURE_TOIMGUR
     END
     POPUP "&Help"
     BEGIN
@@ -438,6 +441,12 @@ BEGIN
     ID_CAPTURE_AREA         "Capture an area (selection)"
     ID_CAPTURE_SCREEN       "Capture the whole screen"
     ID_CAPTURE_WINDOW       "Capture the foreground window"
+    ID_BUTTON32783          "Upload to imgur"
+END
+
+STRINGTABLE
+BEGIN
+    ID_CAPTURE_TOIMGUR      "Shares the current buffer to imgur"
 END
 
 #endif    // English (United States) resources

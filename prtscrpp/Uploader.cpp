@@ -151,6 +151,7 @@ std::string Uploader::imgur(CString fileLocation) {
 
     pFile->Close();
     delete pFile;
+    delete pConnection;
 
     free(buffer);
     session.Close();

@@ -25,6 +25,7 @@ BEGIN_MESSAGE_MAP(CprtscrppView, CScrollView)
     ON_COMMAND(ID_EDIT_PASTE, &CprtscrppView::OnEditPaste)
     ON_COMMAND(ID_EDIT_COPY, &CprtscrppView::OnEditCopy)
     ON_COMMAND(ID_EDIT_CUT, &CprtscrppView::OnEditCut)
+    ON_COMMAND(ID_CAPTURE_TOIMGUR, &CprtscrppView::handleUpload)
 END_MESSAGE_MAP()
 
 CprtscrppView::CprtscrppView() {}
