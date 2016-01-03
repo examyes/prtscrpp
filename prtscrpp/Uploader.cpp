@@ -19,6 +19,10 @@ Uploader::Uploader() {
 Uploader::~Uploader() {
 }
 
+/// <summary>
+/// Returns the full path of the temporary file where a temporary image has been stored for upload.
+/// </summary>
+/// <returns></returns>
 CString Uploader::getTempFile() {
     TCHAR szPath[MAX_PATH];
     GetTempPath(MAX_PATH, szPath);
@@ -27,7 +31,15 @@ CString Uploader::getTempFile() {
     return CString(szPath + CString("prtscrpp_temp.png"));
 }
 
-// xLink's amazing inBetween https://github.com/xLink/CybershadeCMS/blob/c9602626163c753d1a13eafa0a6a00a13822a11c/core/baseFunctions.php
+// xLink's amazing inBetween
+/// <summary>
+/// Returns a substring between two substrings.
+/// </summary>
+/// <param name="content">context</param>
+/// <param name="begin">start of the substring</param>
+/// <param name="end">end of the substring</param>
+/// <see cref="https://github.com/xLink/CybershadeCMS/blob/c9602626163c753d1a13eafa0a6a00a13822a11c/core/baseFunctions.php"/>
+/// <returns></returns>
 std::string InBetween(std::string content, std::string begin, std::string end) {
     if(content.empty() || begin.empty() || end.empty()) return _EMPTY;
 
@@ -46,7 +58,13 @@ std::string InBetween(std::string content, std::string begin, std::string end) {
     return _EMPTY;
 }
 
-// http://weblogs.asp.net/kennykerr/visual-c-in-short-encoding-and-decoding-with-base64
+/// <summary>
+/// base64 encodes a string
+/// </summary>
+/// <param name="bytes">String to be encoded</param>
+/// <param name="byteLength">Length of the string in bytes</param>
+/// <see cref="http://weblogs.asp.net/kennykerr/visual-c-in-short-encoding-and-decoding-with-base64"/>
+/// <returns>base64 encoded string</returns>
 CStringA Uploader::ToBase64(const void* bytes, int byteLength) {
     ASSERT(0 != bytes);
 
@@ -61,7 +79,7 @@ CStringA Uploader::ToBase64(const void* bytes, int byteLength) {
     base64.ReleaseBufferSetLength(base64Length);
 
     // URLEncode escape sequences, we'll need this.
-    base64.Replace("\r\n", ""); // Also remove carriage returns, idk why this is added.
+    base64.Replace("\r\n", ""); // Also remove carriage returns.
     base64.Replace("+", "%2B");
     base64.Replace("/", "%2F");
     base64.Replace("=", "%3D");
@@ -69,6 +87,10 @@ CStringA Uploader::ToBase64(const void* bytes, int byteLength) {
     return base64;
 }
 
+/// <summary>
+/// Uploads a temporarily stored image to imgur.
+/// </summary>
+/// <returns>Direct link to the image if succeess, empty string otherwise</returns>
 std::string Uploader::imgur() {
     FILE *fp; // File pointer
     unsigned char *buffer; // our buffer, a buffer of BYTE[]

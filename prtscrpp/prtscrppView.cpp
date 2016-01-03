@@ -39,24 +39,31 @@ BOOL CprtscrppView::PreCreateWindow(CREATESTRUCT& cs) {
     return CScrollView::PreCreateWindow(cs);
 }
 
-// https://msdn.microsoft.com/en-us/library/3ew6s3ez.aspx
+/// <summary>
+/// Runs on the initial window spawn.
+/// https://msdn.microsoft.com/en-us/library/3ew6s3ez.aspx
+/// </summary>
 void CprtscrppView::OnInitialUpdate() {
     RegisterHotKey(m_hWnd, 100, MOD_CONTROL, 0x2C); // 0x34
     CSize size(100, 100);
     SetScrollSizes(MM_TEXT, size);
 }
 
+/// <summary>
+/// Returns the current document pointer.
+/// </summary>
+/// <returns>m_pDocument pointer to document</returns>
 CprtscrppDoc* CprtscrppView::GetDocument() const {
     ASSERT(m_pDocument->IsKindOf(RUNTIME_CLASS(CprtscrppDoc)));
     return (CprtscrppDoc*)m_pDocument;
 }
 
 // View area onDraw. Display the image if the bitmap exists.
+/// <summary>
+/// Gets called whenever the View gets drawn
+/// </summary>
+/// <param name="pDC">Pointer to device context</param>
 void CprtscrppView::OnDraw(CDC* pDC) {
-    /*CprtscrppDoc *pDoc = GetDocument();
-    ASSERT_VALID(pDoc);
-    if(!pDoc) return;*/
-
     Bitmap &Bitmap = this->pDoc->getBitmap();
     if(Bitmap.IsNull()) {
         // There has been nothing captured or "new" button was pushed.
@@ -68,6 +75,9 @@ void CprtscrppView::OnDraw(CDC* pDC) {
     }
 }
 
+/// <summary>
+/// Fixes rendering of new images by rescrolling to (0, 0)
+/// </summary>
 void CprtscrppView::ReScroll() {
     POINT corner;
     corner.x = 0;
@@ -75,6 +85,10 @@ void CprtscrppView::ReScroll() {
     ScrollToPosition(corner);
 }
 
+/// <summary>
+/// Draws a sample text whenever there is no bitmap loaded.
+/// </summary>
+/// <param name="pDC">Pointer to device context</param>
 void CprtscrppView::drawText(CDC *pDC) {
     CRect rect;
     CBrush brush(GetSysColor(COLOR_APPWORKSPACE)); // Load the brush color
@@ -85,8 +99,10 @@ void CprtscrppView::drawText(CDC *pDC) {
     pDC->TextOut(rect.right / 2, rect.bottom / 2, s, s.GetLength()); // And echo
 }
 
-// Whenever an event occurs in the main area (image gets updated, window gets resized)
-void CprtscrppView::OnUpdate(CView*, LPARAM , CObject*) {
+/// <summary>
+/// Gets called whenever an event occurs in the main area (image gets updated, window gets resized)
+/// </summary>
+void CprtscrppView::OnUpdate(CView *, LPARAM , CObject *) {
     this->pDoc = GetDocument();
     ASSERT_VALID(this->pDoc);
     if(!this->pDoc) return;
@@ -103,6 +119,10 @@ void CprtscrppView::OnUpdate(CView*, LPARAM , CObject*) {
     }
 }
 
+/// <summary>
+/// Update the clipboard with direct link info of the uploaded image.
+/// </summary>
+/// <param name="link">direct hyperlink to the image</param>
 void CprtscrppView::updateClipboard(std::string link) {
     // Try to opent he clipboard
     if(!OpenClipboard()) {
@@ -134,7 +154,9 @@ void CprtscrppView::updateClipboard(std::string link) {
     CloseClipboard();
 }
 
-// Hotkey handler.
+/// <summary>
+/// Gets called whenever a registered hotkey was caught
+/// </summary>
 void CprtscrppView::OnHotKey(UINT nHotKeyId, UINT nKey1, UINT nKey2) {
     // Always hide before sending a notification!
     AfxGetApp()->m_pMainWnd->ShowWindow(SW_HIDE);
@@ -144,6 +166,9 @@ void CprtscrppView::OnHotKey(UINT nHotKeyId, UINT nKey1, UINT nKey2) {
     return CScrollView::OnHotKey(nHotKeyId, nKey1, nKey2);
 }
 
+/// <summary>
+/// Handles uploading of files to a server
+/// </summary>
 void CprtscrppView::handleUpload() {
     Bitmap &Bitmap = this->pDoc->getBitmap(); // Get the bitmap
     Uploader uploader; // Uploader instance
@@ -184,7 +209,9 @@ void CprtscrppView::handleUpload() {
     this->updateClipboard(link);
 }
 
-// Called when saving a file
+/// <summary>
+/// Handles saving of files to the disk.
+/// </summary>
 void CprtscrppView::OnFileSave() {
     // Try to fetch the bitmap first
     Bitmap &Bitmap = this->pDoc->getBitmap();
@@ -217,7 +244,9 @@ void CprtscrppView::OnFileSave() {
     }
 }
 
-// Called when opening a file
+/// <summary>
+/// Handles of opening files from the disk
+/// </summary>
 void CprtscrppView::OnFileOpen() {
     // Try to fetch the bitmap first
     Bitmap &Bitmap = this->pDoc->getBitmap();
@@ -262,6 +291,9 @@ void CprtscrppView::OnFileOpen() {
     this->pDoc->UpdateAllViews(NULL);
 }
 
+/// <summary>
+/// Handles pasting the clipboard BITMAP contents into the app itself
+/// </summary>
 void CprtscrppView::OnEditPaste() {
     if(!OpenClipboard()) return;
 
@@ -304,6 +336,9 @@ void CprtscrppView::OnEditPaste() {
     this->pDoc->UpdateAllViews(NULL);
 }
 
+/// <summary>
+/// Handles copying the BITMAP from the app to the clipboard
+/// </summary>
 void CprtscrppView::OnEditCopy() {
     if(!OpenClipboard()) return; // Try to access the clipboard
 
@@ -330,7 +365,9 @@ void CprtscrppView::OnEditCopy() {
     CloseClipboard();
 }
 
-// Copy+new
+/// <summary>
+/// Handles cutting which is equal to copying and removing the buffer.
+/// </summary>
 void CprtscrppView::OnEditCut() {
     this->OnEditCopy();
     this->pDoc->OnNewDocument();

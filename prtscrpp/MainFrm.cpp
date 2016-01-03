@@ -66,12 +66,19 @@ int CMainFrame::OnCreate(LPCREATESTRUCT lpCreateStruct) {
     return 0;
 }
 
+/// <summary>
+/// Gets called when the app is closed.
+/// </summary>
 void CMainFrame::OnClose() {
-    // Destroy the tray icon here :)
+    // Destroy the tray icon here!
     TrayMessage(NIM_DELETE);
     CFrameWnd::OnClose();
 }
 
+/// <summary>
+/// Gets called when the core window gets initialized
+/// </summary>
+/// <returns>true if success</returns>
 BOOL CMainFrame::PreCreateWindow(CREATESTRUCT& cs) {
     // Size the window accordingly and center it.
     cs.cy = ::GetSystemMetrics(SM_CYSCREEN) / 2;
@@ -84,6 +91,9 @@ BOOL CMainFrame::PreCreateWindow(CREATESTRUCT& cs) {
     return TRUE;
 }
 
+/// <summary>
+/// Spawns a tray icon.
+/// </summary>
 BOOL CMainFrame::TrayMessage(DWORD dwMessage) {
     CString sTip(_T("prtscrpp")); // Tooltip
 
@@ -112,7 +122,9 @@ void CMainFrame::Dump(CDumpContext& dc) const {
 }
 #endif //_DEBUG
 
-// Catch any events that happen in the MainFrame
+/// <summary>
+/// Catches any event that happens inside of MainFrame
+/// </summary>
 LRESULT CMainFrame::WindowProc(UINT message, WPARAM wParam, LPARAM lParam) {
     // We are only interested in the NOTIFYICON event.
     if(message != MYWM_NOTIFYICON) return CFrameWnd::WindowProc(message, wParam, lParam);
@@ -136,7 +148,11 @@ LRESULT CMainFrame::WindowProc(UINT message, WPARAM wParam, LPARAM lParam) {
     return CFrameWnd::WindowProc(message, wParam, lParam);
 }
 
-// Hook any system events (Minimize, maximize, move, etc...)
+/// <summary>
+/// Hooks the global minimize event in order to move the app to tray.
+/// </summary>
+/// <param name="nID">ID of the event</param>
+/// <param name="lParam"></param>
 void CMainFrame::OnSysCommand(UINT nID, LPARAM lParam) {
     CFrameWnd::OnSysCommand(nID, lParam);
 

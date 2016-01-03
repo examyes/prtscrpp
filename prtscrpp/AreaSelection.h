@@ -19,6 +19,7 @@ class AreaSelection : public CDialog {
             enum { IDD = ID_CAPTURE_AREA };
         #endif
         afx_msg void OnHotKey(UINT nHotKeyId, UINT nKey1, UINT nKey2);
+        afx_msg void OnMouseMove(UINT nFlags, CPoint point);
 
     private:
         CRect &rectangle; // The area
@@ -28,7 +29,4 @@ class AreaSelection : public CDialog {
     protected:
 	    virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV support
 	    DECLARE_MESSAGE_MAP()
-public:
-    
-    afx_msg void OnMouseMove(UINT nFlags, CPoint point);
 };

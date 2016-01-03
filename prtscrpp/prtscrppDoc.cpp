@@ -30,6 +30,10 @@ CprtscrppDoc::CprtscrppDoc() {
 
 CprtscrppDoc::~CprtscrppDoc() {}
 
+/// <summary>
+/// Gets called whenever "new" has been pressed on the toolbar/from the menu
+/// </summary>
+/// <returns></returns>
 BOOL CprtscrppDoc::OnNewDocument() {
     if(!CDocument::OnNewDocument()) return FALSE;
 
@@ -42,7 +46,10 @@ BOOL CprtscrppDoc::OnNewDocument() {
     //return TRUE;
 }
 
-// Save/Load bitmaps here
+/// <summary>
+/// Handles serialization.
+/// </summary>
+/// <param name="ar"></param>
 void CprtscrppDoc::Serialize(CArchive& ar) {
     if(ar.IsStoring()) {
         // TODO: add storing code here
@@ -51,9 +58,12 @@ void CprtscrppDoc::Serialize(CArchive& ar) {
     }
 }
 
-// Getter for the main (View) class. Returns a reference. 2 hours of life down the drain all because of an &.
+// Getter for the main (View) class.
 Bitmap &CprtscrppDoc::getBitmap() { return Bitmap; }
 
+/// <summary>
+/// Captures an area of the screen.
+/// </summary>
 void CprtscrppDoc::OnCaptureArea() {
     // Spawn a rectangle
     CRect rectangle;
@@ -77,6 +87,9 @@ void CprtscrppDoc::OnCaptureArea() {
     UpdateAllViews(NULL);
 }
 
+/// <summary>
+/// Captures the whole screen.
+/// </summary>
 void CprtscrppDoc::OnCaptureScreen() {
     CWnd *mainWnd = AfxGetMainWnd(); // Get prtscrpp win and hide it
     BOOL grabArea;
@@ -94,6 +107,9 @@ void CprtscrppDoc::OnCaptureScreen() {
     UpdateAllViews(NULL);
 }
 
+/// <summary>
+/// Captures the first foreground window.
+/// </summary>
 void CprtscrppDoc::OnCaptureWindow() {
     CWnd *mainWnd = AfxGetMainWnd(); // Retrieve main window
     mainWnd->ShowWindow(SW_HIDE); // Hide it
@@ -106,6 +122,10 @@ void CprtscrppDoc::OnCaptureWindow() {
     UpdateAllViews(NULL);
 }
 
+/// <summary>
+/// Sends a notification to the tray
+/// </summary>
+/// <param name="body">The message to be sent</param>
 void CprtscrppDoc::SendTrayNotification(CString body) {
     // Get the main window
     CWnd *mainWnd = AfxGetMainWnd();
@@ -116,7 +136,7 @@ void CprtscrppDoc::SendTrayNotification(CString body) {
 
     // Show the main window -- This is needed because Windows for some reason doesn't process background notifications in some sort of a queue.
     AfxGetMainWnd()->ShowWindow(SW_SHOW);
-    ShowWindow(GetActiveWindow(), SW_SHOW); // TODO: is this one needed?
+    ShowWindow(GetActiveWindow(), SW_SHOW);
     SetFocus(GetActiveWindow());
 
     NOTIFYICONDATA data; // Construct the new Shell32 struct with notification data in it

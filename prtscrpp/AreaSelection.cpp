@@ -28,6 +28,10 @@ END_MESSAGE_MAP()
 
 
 /* MESSAGE HANDLERS */
+/// <summary>
+/// Initializes the dialog.
+/// </summary>
+/// <returns>0 if success</returns>
 BOOL AreaSelection::OnInitDialog() {
     CDialog::OnInitDialog(); // Construct parent
     BOOL grabArea;
@@ -56,14 +60,20 @@ BOOL AreaSelection::OnInitDialog() {
     return true;
 }*/
 
+/// <summary>
+/// Paints the bitmap across the dialog
+/// </summary>
 void AreaSelection::OnPaint() {
     CPaintDC dc(this);
     Bitmap.Draw(dc.GetSafeHdc(), 0, 0);
     rectangleTracker.Draw(&dc);
 }
 
+/// <summary>
+/// Handles pressing of the left mouse button to start tracking the area
+/// </summary>
 void AreaSelection::OnLButtonDown(UINT nFlags, CPoint point)  {
-    // Set the cursor first
+    // Set the cursor to crosshair once the button has been pressed -- resets otherwise.
     SetCursor(AfxGetApp()->LoadStandardCursor(IDC_CROSS));
 
     // Track the area which we would like to screenshot
@@ -73,17 +83,26 @@ void AreaSelection::OnLButtonDown(UINT nFlags, CPoint point)  {
     EndDialog(IDOK); // All good.
 }
 
+/// <summary>
+/// Handles pressing of the right mouse button
+/// </summary>
 void AreaSelection::OnRButtonDown(UINT nFlags, CPoint point) {
     EndDialog(IDCANCEL);
 }
 
+/// <summary>
+/// The framework calls this member function if mouse input is not captured and the mouse causes cursor movement within the CWnd object
+/// </summary>
+/// <returns>nonzero to halt, 0 to continue</returns>
 BOOL AreaSelection::OnSetCursor(CWnd* pWnd, UINT nHitTest, UINT message) {
-    // give the tracker for the selection a chance.
-    // TODO: Is this really needed lol???
+    // If the input wasn't captured properly, change the cursor here.
     SetCursor(AfxGetApp()->LoadStandardCursor(IDC_CROSS));
     return CDialog::OnSetCursor(pWnd, nHitTest, message);
 }
 
+/// <summary>
+/// Gets called whenever a mouse movement has been made inside the dialog.
+/// </summary>
 void AreaSelection::OnMouseMove(UINT nFlags, CPoint point) {
     // Change the cursor to a cross so we know we're going to take a screenie
     SetCursor(AfxGetApp()->LoadStandardCursor(IDC_CROSS));
