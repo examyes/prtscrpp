@@ -7,6 +7,7 @@
 #define IDD_PRTSCRPP_FORM               101
 #define IDR_MAINFRAME                   128
 #define IDR_prtscrppTYPE                130
+#define IDC_MFCLINK1                    1002
 #define ID_CAPTURE_AREA                 32771
 #define ID_CAPTURE_SCREEN               32772
 #define ID_CAPTURE_WINDOW               32773
@@ -21,9 +22,9 @@
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
-#define _APS_NEXT_RESOURCE_VALUE        315
+#define _APS_NEXT_RESOURCE_VALUE        317
 #define _APS_NEXT_COMMAND_VALUE         32787
-#define _APS_NEXT_CONTROL_VALUE         1002
+#define _APS_NEXT_CONTROL_VALUE         1003
 #define _APS_NEXT_SYMED_VALUE           311
 #endif
 #endif
